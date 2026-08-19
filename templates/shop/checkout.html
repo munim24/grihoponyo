@@ -1,0 +1,301 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<style>
+
+/* ======================== Checkout Page ====================== */
+.checkout-wrap {
+    max-width: 1100px;
+    margin: 30px auto 60px;
+    padding: 0 40px;
+}
+.checkout-title {
+    font-size: 24px;
+    color: #222;
+    margin-bottom: 22px;
+    padding-bottom: 12px;
+    border-bottom: 2px solid #eef0ee;
+}
+.checkout-layout {
+    display: grid;
+    grid-template-columns: 1.1fr 1fr;
+    gap: 24px;
+    align-items: start;
+}
+.checkout-notice {
+    background: var(--brand-light-blue); 
+    color: var(--brand-dark);
+    border-radius: 10px;
+    padding: 16px 20px;
+    margin-top: 16px;
+    font-size: 13.5px;
+    line-height: 1.6;
+}
+.checkout-notice p { margin: 0; }
+.checkout-notice p + p { margin-top: 4px; }
+
+.checkout-card {
+    background: #fff;
+    border: 1px solid #e5e5e5;
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.05);
+}
+.checkout-card-title {
+    font-size: 16px;
+    color: #222;
+    margin-bottom: 16px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+/* Order items */
+.order-items { margin-bottom: 18px; }
+.order-item {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 10px 0;
+    border-bottom: 1px solid #f3f3f3;
+    font-size: 14px;
+    color: #333;
+}
+.order-item:last-child { border-bottom: none; }
+.oi-qty { color: #888; font-size: 13px; }
+.oi-price { font-weight: 600; white-space: nowrap; }
+
+/* Promo box */
+.promo-box { margin-bottom: 18px; }
+.promo-input-row { display: flex; gap: 10px; }
+.promo-input-row input {
+    flex: 1;
+    padding: 10px 14px;
+    border: 1px solid #ccc;
+    border-radius: 20px;
+    text-transform: uppercase;
+    font-size: 13px;
+}
+.promo-input-row input:focus { outline: none; border-color: #2e7d32; }
+.promo-btn {
+    background: var(--brand-dark);
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 13px;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+.promo-btn:hover { background: var(--brand-dark-hover); }
+.promo-message {
+    font-size: 12.5px;
+    margin-top: 8px;
+    color: #999;
+}
+.promo-message.applied { color: var(--brand-dark); font-weight: 600; }
+
+/* Price breakdown */
+.price-breakdown {
+    border-top: 1px solid #eee;
+    padding-top: 14px;
+}
+.pb-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 14px;
+    padding: 6px 0;
+    color: #444;
+}
+.pb-row.discount-row { color: var(--brand-dark); }
+.pb-row.pb-total {
+    border-top: 2px solid #eee;
+    margin-top: 6px;
+    padding-top: 12px;
+    font-size: 17px;
+    font-weight: 700;
+    color: #222;
+}
+
+/* Delivery form */
+.delivery-form .form-group { margin-bottom: 16px; }
+.delivery-form label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    color: #444;
+    margin-bottom: 6px;
+}
+.delivery-form input,
+.delivery-form textarea {
+    width: 100%;
+    padding: 11px 14px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 14px;
+    font-family: inherit;
+    transition: border-color 0.2s ease;
+}
+.delivery-form input:focus,
+.delivery-form textarea:focus { outline: none; border-color: var(--brand-dark);}
+.delivery-form textarea { resize: vertical; }
+.place-order-btn {
+    width: 100%;
+    background: var(--brand-dark);
+    color: #fff;
+    padding: 14px;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    margin-top: 4px;
+    transition: background 0.2s ease;
+}
+.place-order-btn:hover { background: var(--brand-dark-hover); }
+
+/* ---------- Checkout Responsive ---------- */
+@media (max-width: 900px) {
+    .checkout-layout { grid-template-columns: 1fr; }
+    .checkout-layout { display: flex; flex-direction: column; }
+    .checkout-form-col { order: 1; }
+    .checkout-summary { order: 2; display: flex; flex-direction: column; }
+    .checkout-notice { order: 3; }
+}
+@media (max-width: 768px) {
+    .checkout-wrap { padding: 0 16px; margin: 20px auto 40px; }
+    .checkout-title { font-size: 20px; margin-bottom: 16px; }
+    .checkout-card { padding: 18px; }
+}
+@media (max-width: 420px) {
+    .promo-input-row { flex-direction: column; }
+    .promo-btn { width: 100%; }
+}
+
+
+</style>
+
+
+<div class="checkout-wrap">
+    <h2 class="checkout-title">Checkout</h2>
+
+    <div class="checkout-layout">
+
+        <!-- Left: Order Summary + Promo + Totals -->
+        <div class="checkout-summary">
+            <div class="checkout-card">
+                <h4 class="checkout-card-title">Order Summary</h4>
+                <div class="order-items">
+                    {% for item in cart %}
+                    <div class="order-item">
+                        <span class="oi-name">{{ item.product.name }} <span class="oi-qty">× {{ item.quantity }}</span></span>
+                        <span class="oi-price">৳{{ item.total_price }}</span>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <div class="promo-box">
+                    <div class="promo-input-row">
+                        <input type="text" id="promo-input" placeholder="Enter promo code" value="{{ promo_code }}">
+                        <button type="button" id="apply-promo-btn" class="promo-btn">
+                            {% if promo_code %}Remove{% else %}Apply{% endif %}
+                        </button>
+                    </div>
+                    <p id="promo-message" class="promo-message {% if promo_code %}applied{% endif %}">
+                        {% if promo_code %}"{{ promo_code }}" applied!{% endif %}
+                    </p>
+                </div>
+
+                <div class="price-breakdown">
+                    <div class="pb-row">
+                        <span>Subtotal</span>
+                        <span id="subtotal-cell">৳{{ subtotal }}</span>
+                    </div>
+                    <div id="discount-row" class="pb-row discount-row" style="{% if not discount_amount %}display:none;{% endif %}">
+                        <span>Discount</span>
+                        <span id="discount-cell">− ৳{{ discount_amount }}</span>
+                    </div>
+                    <div class="pb-row pb-total">
+                        <span>Total</span>
+                        <span id="final-total-cell">৳{{ final_total }}</span>
+                    </div>
+                </div>
+            </div>
+            <div class="checkout-notice">
+                <p><i class="fa-solid fa-triangle-exclamation"></i> Please fill in the required information to confirm your order and click the <strong>"Place Order"</strong> button.</p>
+                <p>Or call directly to place your order: <strong>📞 01518980995</strong></p>
+            </div>
+
+        </div>
+
+        <!-- Right: Delivery Form -->
+        <div class="checkout-form-col">
+            <div class="checkout-card">
+                <h4 class="checkout-card-title">Delivery Information</h4>
+                <form method="post" class="delivery-form">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label>Full Name</label>
+                        <input type="text" name="full_name" required placeholder="Your full name">
+                    </div>
+                    <div class="form-group">
+                        <label>Phone Number</label>
+                        <input type="text" name="phone" required placeholder="01XXXXXXXXX">
+                    </div>
+                    <div class="form-group">
+                        <label>Delivery Address</label>
+                        <textarea name="address" required rows="4" placeholder="House, road, area, city..."></textarea>
+                    </div>
+                    <button type="submit" class="place-order-btn">Place Order</button>
+                </form>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script>
+function getCookie(name) {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop().split(';').shift();
+}
+const csrftoken = getCookie('csrftoken');
+
+document.getElementById('apply-promo-btn').addEventListener('click', function () {
+    const btn = this;
+    const input = document.getElementById('promo-input');
+    const msg = document.getElementById('promo-message');
+
+    if (btn.textContent.trim() === 'Remove') {
+        fetch("{% url 'shop:remove_promo' %}", {
+            method: 'POST',
+            headers: { 'X-CSRFToken': csrftoken },
+        }).then(() => location.reload());
+        return;
+    }
+
+    const code = input.value.trim();
+    if (!code) return;
+
+    fetch("{% url 'shop:apply_promo' %}", {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': csrftoken,
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: `promo_code=${encodeURIComponent(code)}`,
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            location.reload();
+        } else {
+            msg.textContent = data.message;
+            msg.classList.remove('applied');
+        }
+    });
+});
+</script>
+{% endblock %}

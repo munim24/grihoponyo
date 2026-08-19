@@ -1,0 +1,288 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<style>
+/* ===== Category-wise Product Section ===== */
+.category-section { margin-top: 30px; }
+.category-section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1260px;
+    margin: 0 auto 14px;
+    padding: 0 40px 10px;
+    border-bottom: 2px solid #eef0ee;
+}
+
+.category-section-header h3 { font-size: 20px; color: var(--brand-dark); font-weight: 700; }
+.category-section-header .view-all-link {
+    color: var(--brand-dark);
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 14px;
+}
+.category-section .grid { padding-top: 10px; }
+.category-section-header .view-all-link:hover { text-decoration: underline; }
+
+/* ===== Category + Side Ads Row ===== */
+.category-with-ads {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    max-width: 1500px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+.side-ad {
+    flex: 0 0 190px;
+    position: relative;
+    border-radius: 14px;
+    overflow: hidden;
+    background: #fff;
+    border: 1px solid #eef0ee;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+    opacity: 0;
+    transform: translateY(10px);
+    animation: adFadeIn 0.6s ease forwards;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.side-ad:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 14px 28px rgba(0,0,0,0.14);
+}
+.side-ad-label {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    background: rgba(0,0,0,0.55);
+    color: #fff;
+    font-size: 9.5px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    padding: 3px 8px;
+    border-radius: 20px;
+    z-index: 2;
+}
+.side-ad-img-box {
+    width: 100%;
+    aspect-ratio: 1 / 2;
+    overflow: hidden;
+}
+.side-ad img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.4s ease;
+}
+.side-ad:hover img {
+    transform: scale(1.06);
+}
+.side-ad.right { animation-delay: 0.15s; }
+@keyframes adFadeIn {
+    to { opacity: 1; transform: translateY(0); }
+}
+.category-center { flex: 1; min-width: 0; }
+
+@media (max-width: 1050px) {
+    .category-with-ads { flex-wrap: wrap; }
+    .side-ad { flex: 1 1 45%; order: 2; }
+    .category-center { order: 1; flex: 1 1 100%; }
+}
+@media (max-width: 600px) {
+    .side-ad { display: none; }
+}
+
+</style>
+
+
+    <div class="banner-wrap">
+        <img src="{% static 'images/banner.png' %}" alt="Grihoponyo" class="banner-img">
+    </div>
+
+    {% if flash_sale_products %}
+    <div class="flash-sale-section">
+        <div class="flash-sale-header">
+            <h2>⚡ Flash Sale</h2>
+            {% if flash_sale_end %}
+            <div class="flash-countdown" id="flashCountdown" data-end="{{ flash_sale_end|date:'c' }}">
+                <span id="fc-h">00</span>:<span id="fc-m">00</span>:<span id="fc-s">00</span>
+            </div>
+            {% endif %}
+        </div>
+        <div class="grid">
+            {% for product in flash_sale_products %}
+                {% include 'shop/includes/product_card.html' %}
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    <h2 style="text-align:center; margin:12px 0 2px; color:var(--brand-dark); font-weight:700;">Categories</h2>
+    <div class="category-with-ads">
+        {% if ads.0 %}
+            {% if ads.0.link %}
+                <a href="{{ ads.0.link }}" target="_blank" rel="noopener" class="side-ad left">
+                    <span class="side-ad-label">Sponsored</span>
+                    <div class="side-ad-img-box"><img src="{{ ads.0.image.url }}" alt="{{ ads.0.title }}"></div>
+                </a>
+            {% else %}
+                <div class="side-ad left">
+                    <span class="side-ad-label">Sponsored</span>
+                    <div class="side-ad-img-box"><img src="{{ ads.0.image.url }}" alt="{{ ads.0.title }}"></div>
+                </div>
+            {% endif %}
+        {% endif %}
+
+        <div class="category-center">
+            <div class="category-grid">
+                {% for category in categories %}
+                    {% if category.slug == "grocery-food" or category.slug == "health-beauty" or category.slug == "clothing-fashion" or category.slug == "electronics-gadgets" %}
+                        <a href="{% url 'shop:category_detail' category.slug %}" class="card">
+                            <div class="card-img-box">
+                                {% if category.image %}
+                                    <img src="{{ category.image.url }}" alt="{{ category.name }}">
+                                {% endif %}
+                            </div>
+                            <div class="info"><strong>{{ category.name }}</strong></div>
+                        </a>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+
+        {% if ads.1 %}
+            {% if ads.1.link %}
+                <a href="{{ ads.1.link }}" target="_blank" rel="noopener" class="side-ad right">
+                    <span class="side-ad-label">Sponsored</span>
+                    <div class="side-ad-img-box"><img src="{{ ads.1.image.url }}" alt="{{ ads.1.title }}"></div>
+                </a>
+            {% else %}
+                <div class="side-ad right">
+                    <span class="side-ad-label">Sponsored</span>
+                    <div class="side-ad-img-box"><img src="{{ ads.1.image.url }}" alt="{{ ads.1.title }}"></div>
+                </div>
+            {% endif %}
+        {% endif %}
+    </div>
+
+
+    <!-- Category-wise Product Sections -->
+    {% for entry in category_products %}
+        <div class="category-section">
+            <div class="category-section-header">
+                <h3>{{ entry.category.name }}</h3>
+                <a href="{% url 'shop:category_detail' entry.category.slug %}" class="view-all-link">View All ↗</a>
+            </div>
+            <div class="grid">
+                {% for product in entry.products %}
+                    {% include 'shop/includes/product_card.html' %}
+                {% endfor %}
+            </div>
+        </div>
+    {% endfor %}
+
+ 
+
+     <!-- ===== Customer Reviews ===== -->
+    <h2 style="text-align:center; color:var(--brand-dark); font-weight:700; margin-top:10px;">✦ Customer Reviews ✦</h2>
+    <div class="review-section">
+        <div class="review-marquee">
+            <div class="review-track" id="reviewTrack">
+                {% for r in reviews %}
+                    {% include 'shop/includes/review_card.html' with r=r %}
+                {% endfor %}
+                {% if reviews %}
+                    {% for r in reviews %}
+                        {% include 'shop/includes/review_card.html' with r=r %}
+                    {% endfor %}
+                {% else %}
+                    <div class="review-card">
+                        <p class="review-comment">এখনো কোনো রিভিউ নেই। প্রথম রিভিউ আপনিই দিন!</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+        <div style="text-align:center; margin-top:22px;">
+            <button id="openReviewForm" class="add-to-cart-btn" style="max-width:180px; margin:0 auto;">✍️ রিভিউ দিন</button>
+        </div>
+    </div>
+
+
+    <!-- Review Modal -->
+    <div class="review-modal" id="reviewModal">
+        <div class="review-modal-box">
+            <span class="review-modal-close" id="closeReviewModal">&times;</span>
+            <h3>আপনার অভিজ্ঞতা শেয়ার করুন</h3>
+            <form id="reviewForm">
+                <input type="text" name="name" placeholder="আপনার নাম" required>
+                <select name="rating">
+                    <option value="5">★★★★★</option>
+                    <option value="4">★★★★☆</option>
+                    <option value="3">★★★☆☆</option>
+                    <option value="2">★★☆☆☆</option>
+                    <option value="1">★☆☆☆☆</option>
+                </select>
+                <textarea name="comment" placeholder="আপনার মতামত লিখুন..." required></textarea>
+                <button type="submit" class="add-to-cart-btn">Submit</button>
+                <p id="reviewMsg"></p>
+            </form>
+        </div>
+    </div>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // ---- Review Marquee (continuous, seamless) ----
+        const track = document.getElementById('reviewTrack');
+        if (track && track.children.length > 1) {
+            const pxPerSecond = 40;
+            const singleSetWidth = track.scrollWidth / 2;
+            const duration = singleSetWidth / pxPerSecond;
+            track.style.animationDuration = `${duration}s`;
+        }
+
+        // ---- Review Modal ----
+        const modal = document.getElementById('reviewModal');
+        document.getElementById('openReviewForm')?.addEventListener('click', () => modal.classList.add('open'));
+        document.getElementById('closeReviewModal')?.addEventListener('click', () => modal.classList.remove('open'));
+        modal?.addEventListener('click', (e) => { if (e.target === modal) modal.classList.remove('open'); });
+
+        // ---- Review Submit (AJAX, uses getCookie from script.js) ----
+        document.getElementById('reviewForm')?.addEventListener('submit', function (e) {
+            e.preventDefault();
+            const form = e.target;
+            const msgEl = document.getElementById('reviewMsg');
+            fetch("{% url 'pages:submit_review' %}", {
+                method: 'POST',
+                headers: { 'X-CSRFToken': getCookie('csrftoken') },
+                body: new FormData(form),
+            })
+            .then(res => res.json())
+            .then(data => {
+                msgEl.textContent = data.message;
+                msgEl.style.color = data.success ? 'var(--brand-dark)' : 'var(--brand-danger)';
+                if (data.success) form.reset();
+            });
+        });
+
+        // ---- Flash Sale Countdown ----
+        const cd = document.getElementById('flashCountdown');
+        if (cd) {
+            const end = new Date(cd.dataset.end).getTime();
+            const fcH = document.getElementById('fc-h');
+            const fcM = document.getElementById('fc-m');
+            const fcS = document.getElementById('fc-s');
+            const timer = setInterval(() => {
+                const diff = Math.max(0, end - Date.now());
+                fcH.textContent = String(Math.floor(diff / 3600000)).padStart(2, '0');
+                fcM.textContent = String(Math.floor((diff % 3600000) / 60000)).padStart(2, '0');
+                fcS.textContent = String(Math.floor((diff % 60000) / 1000)).padStart(2, '0');
+                if (diff <= 0) { clearInterval(timer); location.reload(); }
+            }, 1000);
+        }
+    });
+    </script>
+
+{% endblock %}

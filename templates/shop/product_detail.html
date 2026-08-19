@@ -1,0 +1,197 @@
+{% extends 'base.html' %}
+{% load shop_extras %}
+
+{% block content %}
+<style>
+/* ===== Product Detail Page ===== */
+.product-detail-wrap {
+    display: flex;
+    gap: 40px;
+    max-width: 1000px;
+    margin: 30px auto;
+    padding: 0 90px 0 40px;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    padding-top: 30px;
+    padding-bottom: 30px;
+}
+
+.product-detail-image {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f5f6fa;
+    border-radius: 10px;
+    min-height: 320px;
+    overflow: hidden;
+    position: relative;
+    cursor: zoom-in;
+}
+.product-detail-image img {
+    max-width: 100%;
+    max-height: 320px;
+    object-fit: contain;
+    transition: transform 0.12s ease-out;
+    transform-origin: center center;
+    will-change: transform;
+}
+.product-detail-image.zoomed img {
+    transform: scale(2.3);
+}
+
+.product-detail-info { flex: 1.2; }
+
+.product-category-badge {
+    display: inline-block;
+    background: var(--brand-light-blue); 
+    color: var(--brand-dark);
+    font-size: 12px;
+    font-weight: 600;
+    padding: 4px 12px;
+    border-radius: 20px;
+    text-decoration: none;
+    margin-bottom: 12px;
+}
+.product-detail-info h2 { font-size: 24px; margin-bottom: 8px; }
+.product-weight { color: #777; font-size: 14px; margin-bottom: 10px; }
+
+.product-detail-price {
+    font-size: 26px;
+    font-weight: 700;
+    color: #222;
+    margin-bottom: 15px;
+}
+.product-detail-price .old-price {
+    font-size: 16px;
+    color: #999;
+    text-decoration: line-through;
+    font-weight: 400;
+    margin-left: 10px;
+}
+.product-detail-price .discount-badge-inline {
+    background: #e53935; color: #fff; font-size: 12px; font-weight: 600;
+    padding: 3px 10px; border-radius: 20px; margin-left: 8px; vertical-align: middle;
+}
+
+.product-description { color: #555; line-height: 1.7; margin-bottom: 15px; }
+.product-stock { font-size: 14px; margin-bottom: 20px; }
+
+.product-detail-actions {
+    display: flex;
+    gap: 15px;
+    align-items: stretch;
+}
+.pd-cart-action { flex: 1; }
+.pd-add-btn, .pd-stepper { height: 46px; }
+.buy-now-btn {
+    width: 100%;
+    height: 46px;
+    background: #1b1b1b;
+    color: #fff;
+    border: none;
+    border-radius: 20px;
+    font-weight: 600;
+    cursor: pointer;
+    font-size: 14px;
+}
+.buy-now-btn:hover { background: #333; }
+
+/* Mobile */
+@media (max-width: 768px) {
+    .product-detail-wrap { flex-direction: column; padding: 20px; }
+}
+
+</style>
+
+
+<div class="product-detail-wrap">
+
+    <div class="product-detail-image">
+        {% if product.image %}
+            <img src="{{ product.image.url }}" alt="{{ product.name }}">
+        {% endif %}
+    </div>
+
+    <div class="product-detail-info">
+        <a href="{% url 'shop:category_detail' product.category.slug %}" class="product-category-badge">
+            <b>{{ product.category.name }}</b>
+        </a>
+
+        <h2>{{ product.name }}</h2>
+
+        {% if product.weight %}
+            <p class="product-weight">Weight: {{ product.weight }}</p>
+        {% endif %}
+
+        <div class="product-detail-price">
+            ৳{{ product.final_price|floatformat:0 }}
+            {% if product.discount_price %}
+                <span class="old-price">৳{{ product.price|floatformat:0 }}</span>
+                <span class="discount-badge-inline">{{ product.discount_percent }}% OFF</span>
+            {% endif %}
+        </div>
+
+        <p class="product-description">{{ product.description }}</p>
+
+        <p class="product-stock">
+            {% if product.stock > 0 %}
+                ✅ In Stock ({{ product.stock }} available)
+            {% else %}
+                ❌ Out of Stock
+            {% endif %}
+        </p>
+
+        {% with qty=cart|cart_qty:product.id %}
+        <div class="product-detail-actions"
+             data-product-id="{{ product.id }}"
+             data-add-url="{% url 'shop:cart_add' product.id %}"
+             data-update-url="{% url 'shop:cart_update' product.id %}"
+             data-remove-url="{% url 'shop:cart_remove' product.id %}"
+             data-buy-now-url="{% url 'shop:buy_now' product.id %}">
+
+            <div class="pd-cart-action">
+                {% if qty > 0 %}
+                    <div class="qty-stepper pd-stepper">
+                        <button type="button" class="qty-minus">−</button>
+                        <span class="qty-label">{{ qty }} in Cart</span>
+                        <button type="button" class="qty-plus">+</button>
+                    </div>
+                {% else %}
+                    <button type="button" class="add-to-cart-btn pd-add-btn">+ Add to Cart</button>
+                {% endif %}
+            </div>
+
+            <form action="{% url 'shop:buy_now' product.id %}" method="post" style="flex:1;">
+                {% csrf_token %}
+                <button type="submit" class="buy-now-btn">Buy Now</button>
+            </form>
+        </div>
+        {% endwith %}
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const zoomBox = document.querySelector('.product-detail-image');
+    const zoomImg = zoomBox ? zoomBox.querySelector('img') : null;
+
+    if (zoomBox && zoomImg) {
+        zoomBox.addEventListener('mousemove', function (e) {
+            const rect = zoomBox.getBoundingClientRect();
+            const x = ((e.clientX - rect.left) / rect.width) * 100;
+            const y = ((e.clientY - rect.top) / rect.height) * 100;
+            zoomImg.style.transformOrigin = `${x}% ${y}%`;
+            zoomBox.classList.add('zoomed');
+        });
+
+        zoomBox.addEventListener('mouseleave', function () {
+            zoomBox.classList.remove('zoomed');
+            zoomImg.style.transformOrigin = 'center center';
+        });
+    }
+});
+</script>
+
+{% endblock %}

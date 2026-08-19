@@ -1,0 +1,58 @@
+<footer class="site-footer">
+    <div class="footer-top">
+
+        <div class="footer-col footer-brand">
+            <h3>🌿Grihoponyo</h3>
+            <p>Dedicating an ecosystem to delivering safe, authenticated & reliable agro-food straight to your household.</p>
+        <div class="footer-social">
+                <a href="https://www.facebook.com" target="_blank" rel="noopener" aria-label="Facebook"><i class="fa-brands fa-facebook"></i></a>
+                <a href="https://www.instagram.com" target="_blank" rel="noopener" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
+                <a href="mailto:shop.grihoponyo@gmail.com" aria-label="Email"><i class="fa-solid fa-envelope"></i></a>
+            </div>
+        </div>
+
+        <div class="footer-col">
+            <h4>Explore Products</h4>
+            <ul>
+                {% for cat in nav_categories %}
+                    {% if cat.slug == "grocery-food" or cat.slug == "health-beauty" or cat.slug == "clothing-fashion" or cat.slug == "electronics-gadgets" %}
+                        <li><a href="{% url 'shop:category_detail' cat.slug %}">{{ cat.name }}</a></li>
+                    {% endif %}
+                {% endfor %}
+            </ul>
+        </div>
+
+        <div class="footer-col">
+            <h4>Other Links</h4>
+            <ul>
+                <li><a href="{% url 'pages:our_mission' %}">Our Mission</a></li>
+                <li><a href="{% url 'pages:contact_us' %}">Contact Us</a></li>
+                <li><a href="{% url 'shop:track_order' %}">Track Order</a></li>
+                <li><a href="{% url 'pages:faq' %}">Frequently Asked Questions</a></li>
+            </ul>
+        </div>
+
+        <div class="footer-col">
+            <h4>Policies</h4>
+            <ul>
+                <li><a href="{% url 'pages:refund_policy' %}">Refund Policy</a></li>
+                <li><a href="{% url 'pages:exchange_policy' %}">Exchange Policy</a></li>
+                <li><a href="{% url 'pages:privacy_policy' %}">Privacy Policy</a></li>
+                <li><a href="{% url 'pages:terms_conditions' %}">Terms & Conditions</a></li>
+            </ul>
+        </div>
+
+        <div class="footer-col">
+            <h4>Contact</h4>
+            <ul>
+                <li>📞 <a href="tel:+8801969914777">01518980995</a></li>
+                <li>📍 Alif Housing, Adabor, Ring Road, Shyamoli,  Dhaka - 1207, Bangladesh. </li>
+            </ul>
+        </div>
+
+    </div>
+
+    <div class="footer-bottom">
+        <p>&copy; {% now "Y" %} Grihoponyo. All rights reserved.</p>
+    </div>
+</footer>

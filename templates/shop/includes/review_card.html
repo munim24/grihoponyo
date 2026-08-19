@@ -1,0 +1,20 @@
+<div class="review-card">
+    <div class="review-quote-icon">❝</div>
+    <div class="review-stars">
+        {% for i in "12345" %}
+            {% if forloop.counter <= r.rating %}
+                <span class="filled">★</span>
+            {% else %}
+                <span>☆</span>
+            {% endif %}
+        {% endfor %}
+    </div>
+    <p class="review-comment">{{ r.comment }}</p>
+    <div class="review-footer">
+        <div class="review-avatar">{{ r.name|first|upper }}</div>
+        <div class="review-meta">
+            <div class="review-name">{{ r.name }}</div>
+            <div class="review-date">{{ r.created_at|date:"d M, Y" }}</div>
+        </div>
+    </div>
+</div>
