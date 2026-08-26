@@ -42,8 +42,8 @@ ALLOWED_HOSTS = [
 CSRF_TRUSTED_ORIGINS = [
     "https://grihoponyo.com",
     "https://www.grihoponyo.com",
-    '127.0.0.1',
-    'localhost',
+    'http://127.0.0.1',
+    'http://localhost',
 
 ]
 
