@@ -25,5 +25,6 @@ urlpatterns = [
 
     # Track Order URL
     path('track-order/', views.track_order, name='track_order'),
-    path('buy-now/<int:product_id>/', views.buy_now, name='buy_now'),   # <-- নতুন
+    path('buy-now/<int:product_id>/', views.buy_now, name='buy_now'), 
+    path('set-delivery-area/', views.set_delivery_area, name='set_delivery_area'),
 ]

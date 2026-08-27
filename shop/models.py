@@ -6,7 +6,9 @@ class Category(models.Model):
     name = models.CharField(max_length=100)
     slug = models.SlugField(unique=True, blank=True)
     image = models.ImageField(upload_to='categories/', blank=True, null=True)
-
+    show_on_home = models.BooleanField(default=False, help_text="Homepage-e top category card e dekhabe")
+    show_in_footer = models.BooleanField(default=False, help_text="Footer er 'Explore Products' e dekhabe")
+    
     class Meta:
         verbose_name_plural = "Categories"
 
@@ -69,11 +71,15 @@ class Order(models.Model):
         ('delivered', 'Delivered'),
         ('cancelled', 'Cancelled'),
     )
+    DELIVERY_AREA_CHOICES = (
+        ('dhaka', 'Inside Dhaka (৳80)'),
+        ('outside', 'Outside Dhaka (৳140)'),
+    )
 
     order_id = models.CharField(max_length=20, unique=True)
     full_name = models.CharField(max_length=150)
     phone = models.CharField(max_length=20)
-    email = models.EmailField(blank=True)          # <-- নতুন
+    email = models.EmailField(blank=True)        
     address = models.TextField()
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
     promo_code = models.CharField(max_length=30, blank=True)
@@ -81,6 +87,9 @@ class Order(models.Model):
     subtotal = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     total_amount = models.DecimalField(max_digits=10, decimal_places=2)
     created_at = models.DateTimeField(auto_now_add=True)
+
+    delivery_area = models.CharField(max_length=10, choices=DELIVERY_AREA_CHOICES, default='dhaka')
+    delivery_charge = models.DecimalField(max_digits=10, decimal_places=2, default=80)
 
     def __str__(self):
         return self.order_id

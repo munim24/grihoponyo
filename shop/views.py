@@ -178,24 +178,47 @@ def search_suggestions(request):
 
 
 def generate_order_id():
-    return 'BA' + ''.join(random.choices(string.digits, k=8))
+    date_part = timezone.now().strftime('%y%m%d')
+    last_order = Order.objects.filter(
+        order_id__startswith=f'BA-{date_part}-'
+    ).order_by('-id').first()
+
+    if last_order:
+        last_seq = int(last_order.order_id.split('-')[-1])
+        next_seq = last_seq + 1
+    else:
+        next_seq = 1
+
+    return f'BA-{date_part}-{next_seq:04d}'
 
 
 
-
+DELIVERY_CHARGES = {
+          'dhaka': Decimal('80'), 
+          'outside': Decimal('140')
+    }
 
 def checkout(request):
     cart = Cart(request)
-
     if len(cart) == 0:
         return redirect('shop:cart_detail')
 
     subtotal = cart.get_total_price()
     promo_code = request.session.get('promo_code', '')
     discount_amount = Decimal(request.session.get('promo_discount', '0'))
-    final_total = subtotal - discount_amount
+    delivery_area = request.session.get('delivery_area', 'dhaka')
+    if delivery_area not in DELIVERY_CHARGES:
+        delivery_area = 'dhaka'
+    delivery_charge = DELIVERY_CHARGES[delivery_area]
+    final_total = subtotal - discount_amount + delivery_charge
 
     if request.method == 'POST':
+        delivery_area = request.POST.get('delivery_area', delivery_area)
+        if delivery_area not in DELIVERY_CHARGES:
+            delivery_area = 'dhaka'
+        delivery_charge = DELIVERY_CHARGES[delivery_area]
+        final_total = subtotal - discount_amount + delivery_charge
+
         full_name = request.POST.get('full_name')
         phone = request.POST.get('phone')
         address = request.POST.get('address')
@@ -212,6 +235,8 @@ def checkout(request):
             subtotal=subtotal,
             promo_code=promo_code,
             discount_amount=discount_amount,
+            delivery_area=delivery_area,
+            delivery_charge=delivery_charge,
             total_amount=final_total,
         )
 
@@ -225,7 +250,7 @@ def checkout(request):
             )
             order_items_text += f"- {item['product'].name} x {item['quantity']} = ৳{item['total_price']}\n"
 
-        # ===== Admin ke notification email pathano =====
+        area_label = 'Inside Dhaka' if delivery_area == 'dhaka' else 'Outside Dhaka'
         email_body = f"""New Order Received!
 
                     Order ID: {order.order_id}
@@ -237,6 +262,7 @@ def checkout(request):
                     {order_items_text}
                     Subtotal: ৳{subtotal}
                     Discount: ৳{discount_amount} ({promo_code if promo_code else 'No promo'})
+                    Delivery ({area_label}): ৳{delivery_charge}
                     Total: ৳{final_total}
                     """
         try:
@@ -245,7 +271,7 @@ def checkout(request):
                 message=email_body,
                 from_email=settings.DEFAULT_FROM_EMAIL,
                 recipient_list=[settings.ADMIN_EMAIL],
-                fail_silently=True,   # email fail korleo order process atke jabe na
+                fail_silently=True,
             )
         except Exception:
             pass
@@ -253,6 +279,7 @@ def checkout(request):
         cart.clear()
         request.session.pop('promo_code', None)
         request.session.pop('promo_discount', None)
+        request.session.pop('delivery_area', None)
 
         return redirect('shop:order_success', order_id=order.order_id)
 
@@ -261,9 +288,31 @@ def checkout(request):
         'subtotal': subtotal,
         'promo_code': promo_code,
         'discount_amount': discount_amount,
+        'delivery_area': delivery_area,
+        'delivery_charge': delivery_charge,
         'final_total': final_total,
     }
     return render(request, 'shop/checkout.html', context)
+
+
+@require_POST
+def set_delivery_area(request):
+    area = request.POST.get('delivery_area', 'dhaka')
+    if area not in DELIVERY_CHARGES:
+        area = 'dhaka'
+    request.session['delivery_area'] = area
+
+    cart = Cart(request)
+    subtotal = cart.get_total_price()
+    discount_amount = Decimal(request.session.get('promo_discount', '0'))
+    delivery_charge = DELIVERY_CHARGES[area]
+    final_total = subtotal - discount_amount + delivery_charge
+
+    return JsonResponse({
+        'success': True,
+        'delivery_charge': str(delivery_charge),
+        'new_total': str(final_total),
+    })
 
 
 

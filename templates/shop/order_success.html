@@ -24,6 +24,7 @@
         <hr style="margin:10px 0; border:none; border-top:1px dashed #b8d4f0;">
 
         <p>Subtotal: ৳{{ order.subtotal }}</p>
+        <p>Delivery ({{ order.get_delivery_area_display }}): ৳{{ order.delivery_charge }}</p>
 
         {% if order.discount_amount > 0 %}
             <p style="color:var(--brand-blue);">

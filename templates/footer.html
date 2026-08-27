@@ -1,12 +1,19 @@
+{% load static %}
 <footer class="site-footer">
     <div class="footer-top">
 
         <div class="footer-col footer-brand">
-            <h3>🌿Grihoponyo</h3>
-            <p>Dedicating an ecosystem to delivering safe, authenticated & reliable agro-food straight to your household.</p>
+
+        {% comment %} <h3>🌿Grihoponyo</h3> {% endcomment %}
+
+        <a href="{% url 'shop:home' %}" class="logo">
+            <img src="{% static 'images/logo.png' %}" alt="Grihoponyo" class="logo-img">
+        </a>
+        <p>Dedicated to delivering quality, authentic & reliable products straight to your household.</p>
+      
         <div class="footer-social">
-                <a href="https://www.facebook.com" target="_blank" rel="noopener" aria-label="Facebook"><i class="fa-brands fa-facebook"></i></a>
-                <a href="https://www.instagram.com" target="_blank" rel="noopener" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
+                <a href="https://www.facebook.com/grihoponyo" target="_blank" rel="noopener" aria-label="Facebook"><i class="fa-brands fa-facebook"></i></a>
+                <a href="https://www.instagram.com/grihoponyo" target="_blank" rel="noopener" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
                 <a href="mailto:shop.grihoponyo@gmail.com" aria-label="Email"><i class="fa-solid fa-envelope"></i></a>
             </div>
         </div>
@@ -15,7 +22,7 @@
             <h4>Explore Products</h4>
             <ul>
                 {% for cat in nav_categories %}
-                    {% if cat.slug == "grocery-food" or cat.slug == "health-beauty" or cat.slug == "clothing-fashion" or cat.slug == "electronics-gadgets" %}
+                    {% if cat.show_in_footer %}
                         <li><a href="{% url 'shop:category_detail' cat.slug %}">{{ cat.name }}</a></li>
                     {% endif %}
                 {% endfor %}

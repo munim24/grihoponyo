@@ -99,7 +99,7 @@
 
 
     <div class="banner-wrap">
-        <img src="{% static 'images/banner.png' %}" alt="Grihoponyo" class="banner-img">
+        <img src="{% static 'images/media.jpeg' %}" alt="Grihoponyo" class="banner-img">
     </div>
 
     {% if flash_sale_products %}
@@ -139,8 +139,9 @@
         <div class="category-center">
             <div class="category-grid">
                 {% for category in categories %}
-                    {% if category.slug == "grocery-food" or category.slug == "health-beauty" or category.slug == "clothing-fashion" or category.slug == "electronics-gadgets" %}
-                        <a href="{% url 'shop:category_detail' category.slug %}" class="card">
+                    {% comment %} {% if category.slug == "grocery-food" or category.slug == "health-beauty" or category.slug == "clothing-fashion" or category.slug == "electronics-gadgets" %} {% endcomment %}
+                    {% if category.show_on_home %}
+                       <a href="{% url 'shop:category_detail' category.slug %}" class="card">
                             <div class="card-img-box">
                                 {% if category.image %}
                                     <img src="{{ category.image.url }}" alt="{{ category.name }}">
@@ -153,6 +154,7 @@
             </div>
         </div>
 
+        {% comment %} add-img-size :  600 × 1200px (or 500 × 1000px) {% endcomment %}
         {% if ads.1 %}
             {% if ads.1.link %}
                 <a href="{{ ads.1.link }}" target="_blank" rel="noopener" class="side-ad right">
@@ -200,13 +202,13 @@
                     {% endfor %}
                 {% else %}
                     <div class="review-card">
-                        <p class="review-comment">এখনো কোনো রিভিউ নেই। প্রথম রিভিউ আপনিই দিন!</p>
+                        <p class="review-comment">No reviews yet. Be the first to leave a review!</p>
                     </div>
                 {% endif %}
             </div>
         </div>
         <div style="text-align:center; margin-top:22px;">
-            <button id="openReviewForm" class="add-to-cart-btn" style="max-width:180px; margin:0 auto;">✍️ রিভিউ দিন</button>
+            <button id="openReviewForm" class="add-to-cart-btn" style="max-width:180px; margin:0 auto;">✍️ Give Review</button>
         </div>
     </div>
 
@@ -215,9 +217,9 @@
     <div class="review-modal" id="reviewModal">
         <div class="review-modal-box">
             <span class="review-modal-close" id="closeReviewModal">&times;</span>
-            <h3>আপনার অভিজ্ঞতা শেয়ার করুন</h3>
+            <h3>Share Your Experience</h3>
             <form id="reviewForm">
-                <input type="text" name="name" placeholder="আপনার নাম" required>
+                <input type="text" name="name" placeholder="Your name" required>
                 <select name="rating">
                     <option value="5">★★★★★</option>
                     <option value="4">★★★★☆</option>
@@ -225,7 +227,7 @@
                     <option value="2">★★☆☆☆</option>
                     <option value="1">★☆☆☆☆</option>
                 </select>
-                <textarea name="comment" placeholder="আপনার মতামত লিখুন..." required></textarea>
+                <textarea name="comment" placeholder="Write your feedback..." required></textarea>
                 <button type="submit" class="add-to-cart-btn">Submit</button>
                 <p id="reviewMsg"></p>
             </form>
