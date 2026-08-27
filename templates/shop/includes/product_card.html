@@ -26,22 +26,52 @@
         {% endif %}
     </div>
 
-    {% with qty=cart|cart_qty:product.id %}
-        <div class="cart-action"
-             data-product-id="{{ product.id }}"
-             data-add-url="{% url 'shop:cart_add' product.id %}"
-             data-update-url="{% url 'shop:cart_update' product.id %}"
-             data-remove-url="{% url 'shop:cart_remove' product.id %}">
+{% with qty=cart|cart_qty:product.id %}
+    <div class="cart-action"
+         data-product-id="{{ product.id }}"
+         data-add-url="{% url 'shop:cart_add' product.id %}"
+         data-update-url="{% url 'shop:cart_update' product.id %}"
+         data-remove-url="{% url 'shop:cart_remove' product.id %}">
 
-            {% if qty > 0 %}
-                <div class="qty-stepper">
-                    <button type="button" class="qty-minus">−</button>
-                    <span class="qty-label">{{ qty }} in Cart</span>
-                    <button type="button" class="qty-plus">+</button>
-                </div>
-            {% else %}
-                <button type="button" class="add-to-cart-btn">+ Add to Cart</button>
-            {% endif %}
-        </div>
-    {% endwith %}
+        {% if qty > 0 %}
+
+            <div class="qty-stepper">
+                <button type="button" class="qty-minus">−</button>
+
+                <span class="qty-label">
+                    {{ qty }} Cart
+                </span>
+
+                <button type="button" class="qty-plus">+</button>
+            </div>
+
+            <form action="{% url 'shop:buy_now' product.id %}"
+                  method="post"
+                  class="buy-now-form">
+                {% csrf_token %}
+                <button type="submit" class="buy-now-btn">
+                    Buy Now
+                </button>
+            </form>
+
+        {% else %}
+
+            <button type="button" class="add-to-cart-btn">
+                + Add to Cart
+            </button>
+
+            <form action="{% url 'shop:buy_now' product.id %}"
+                  method="post"
+                  class="buy-now-form">
+                {% csrf_token %}
+                <button type="submit" class="buy-now-btn">
+                    Buy Now
+                </button>
+            </form>
+
+        {% endif %}
+
+    </div>
+{% endwith %}
+
 </div>
