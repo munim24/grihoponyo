@@ -25,16 +25,33 @@ function updateFloatingCart(count, total) {
 }
 
 function renderCartAction(container, qty) {
+    // Existing Buy Now form preserve করে রাখবো
+    const buyNowForm = container.querySelector('.buy-now-form');
+
+    // Cart control নতুন করে render হবে
+    container.innerHTML = '';
+
     if (qty > 0) {
-        container.innerHTML = `
+        container.insertAdjacentHTML('afterbegin', `
             <div class="qty-stepper">
                 <button type="button" class="qty-minus">−</button>
-                <span class="qty-label">${qty} in Cart</span>
+                <span class="qty-label">${qty} Cart</span>
                 <button type="button" class="qty-plus">+</button>
-            </div>`;
+            </div>
+        `);
     } else {
-        container.innerHTML = `<button type="button" class="add-to-cart-btn">+ Add to Cart</button>`;
+        container.insertAdjacentHTML('afterbegin', `
+            <button type="button" class="add-to-cart-btn">
+                + Add to Cart
+            </button>
+        `);
     }
+
+    // Buy Now form আবার যোগ করা হবে
+    if (buyNowForm) {
+        container.appendChild(buyNowForm);
+    }
+
     attachCartActionEvents(container);
 }
 
