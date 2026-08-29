@@ -59,4 +59,15 @@
 
     </div>
 </div>
+
+<script>
+fbq('track', 'Purchase', {
+    value: {{ order.total_amount }},
+    currency: 'BDT',
+    content_ids: [{% for item in order.items.all %}'{{ item.product.id }}'{% if not forloop.last %},{% endif %}{% endfor %}],
+    content_type: 'product',
+    num_items: {{ order.items.count }}
+}, {eventID: 'order_{{ order.id }}'});
+</script>
+
 {% endblock %}
