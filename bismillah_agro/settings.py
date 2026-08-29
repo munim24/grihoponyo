@@ -87,6 +87,7 @@ TEMPLATES = [
                 'django.contrib.messages.context_processors.messages',
                 'shop.context_processors.categories', 
                 'shop.context_processors.cart',
+                'shop.context_processors.meta_pixel',
             ],
         },
     },
