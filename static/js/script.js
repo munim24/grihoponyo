@@ -71,6 +71,12 @@ function attachCartActionEvents(container) {
             postCart(urlSource.dataset.addUrl, 1).then(data => {
                 renderCartAction(container, data.quantity);
                 updateFloatingCart(data.cart_count, data.cart_total);
+
+                fbq('track', 'AddToCart', {
+                    content_ids: [urlSource.dataset.productId],
+                    content_type: 'product',
+                    currency: 'BDT'
+                });
             });
         });
     }
