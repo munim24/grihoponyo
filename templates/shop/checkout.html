@@ -452,4 +452,14 @@ document.querySelectorAll('input[name="delivery_area_radio"]').forEach(radio => 
 
 
 </script>
+<script>
+fbq('track', 'InitiateCheckout', {
+    value: {{ subtotal }},
+    currency: 'BDT',
+    num_items: {{ cart|length }}
+});
+</script>
+
+
+
 {% endblock %}
