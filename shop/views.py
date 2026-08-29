@@ -12,34 +12,7 @@ from django.conf import settings
 from django.db.models import Q
 from django.utils import timezone
 
-# def home(request):
-#     cart = Cart(request)
-#     categories = Category.objects.all()
-#     products = Product.objects.filter(is_active=True)[:8]
-#     reviews = Review.objects.filter(is_approved=True).order_by('-created_at')[:10]
 
-#     flash_qs = Product.objects.filter(
-#         is_active=True, is_flash_sale=True, flash_sale_end__gt=timezone.now()
-#     ).order_by('flash_sale_end')
-#     flash_sale_products = flash_qs[:8]
-#     flash_sale_end = flash_qs.first().flash_sale_end if flash_qs.exists() else None
-
-#     category_products = []
-#     for cat in categories:
-#         cat_products = Product.objects.filter(category=cat, is_active=True)[:4]
-#         if cat_products:
-#             category_products.append({'category': cat, 'products': cat_products})
-
-#     context = {
-#         'categories': categories,
-#         'products': products,
-#         'cart': cart,
-#         'category_products': category_products,
-#         'reviews': reviews,
-#         'flash_sale_products': flash_sale_products,
-#         'flash_sale_end': flash_sale_end,
-#     }
-#     return render(request, 'home.html', context)
 
 def home(request):
     cart = Cart(request)
@@ -267,7 +240,7 @@ def checkout(request):
                     """
         try:
             send_mail(
-                subject=f'New Order #{order.order_id} - Bismillah Agro',
+                subject=f'New Order #{order.order_id} - Grihoponyo',
                 message=email_body,
                 from_email=settings.DEFAULT_FROM_EMAIL,
                 recipient_list=[settings.ADMIN_EMAIL],
