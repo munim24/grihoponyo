@@ -132,6 +132,37 @@ body { font-family: Arial, sans-serif; background: #f9f9f9; color: #222; }
 @media (min-width: 769px) {
     .track-link { margin-right: 20px; }
 }
+
+
+.combo-offer-badge {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: linear-gradient(135deg, #ff6b6b, #ffb347);
+    color: #fff;
+    font-size: 12.5px;
+    font-weight: 700;
+    text-decoration: none;
+    padding: 7px 16px;
+    border-radius: 20px;
+    white-space: nowrap;
+    flex-shrink: 0;
+    box-shadow: 0 0 8px rgba(255, 107, 107, 0.6);
+    animation: comboGlow 1.6s ease-in-out infinite;
+    transition: filter 0.2s ease;
+}
+.combo-offer-badge:hover { filter: brightness(1.1); }
+@keyframes comboGlow {
+    0%, 100% {
+        box-shadow: 0 0 6px rgba(255, 107, 107, 0.5), 0 0 0 rgba(255, 179, 71, 0);
+        transform: scale(1);
+    }
+    50% {
+        box-shadow: 0 0 16px rgba(255, 107, 107, 0.9), 0 0 10px rgba(255, 179, 71, 0.6);
+        transform: scale(1.05);
+    }
+}
+
 /* ===== Search Suggestions ===== */
 .search-suggestions {
     position: absolute; top: 110%; left: 0; right: 0;
@@ -297,6 +328,9 @@ body { font-family: Arial, sans-serif; background: #f9f9f9; color: #222; }
     border-radius: 12px;
     width: 135px;
     height: 135px;
+    border: 1px solid #e5e5e5;
+    background: #fff;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.04);
 }
 .card-img-box img {
     width: 100%;
@@ -417,27 +451,30 @@ body { font-family: Arial, sans-serif; background: #f9f9f9; color: #222; }
 .review-card {
     flex: 0 0 310px;
     width: 310px;
-    height: 200px;
+    min-height: 210px;
+    height: auto;
     background: linear-gradient(180deg, #ffffff 0%, #fbfdfb 100%);
     border: 1px solid #e6ede6;
     border-radius: 16px;
-    padding: 22px 24px 18px;
+    padding: 18px 24px 16px;
     text-align: left;
     box-shadow: 0 4px 14px rgba(63, 114, 175, 0.08);
     display: flex;
     flex-direction: column;
+    overflow: hidden;
     transition: box-shadow 0.25s ease, border-color 0.25s ease;
 }
+
 .review-card:hover {
     box-shadow: 0 8px 22px rgba(63, 114, 175, 0.12);
     border-color: var(--brand-light-blue);
 }
 .review-quote-icon {
-    font-size: 30px;
+    font-size: 22px;
     color: var(--brand-light-green);
     font-weight: 700;
     line-height: 1;
-    margin-bottom: 2px;
+    margin-bottom: 0;
     font-family: Georgia, serif;
 }
 .review-stars {
@@ -465,8 +502,9 @@ body { font-family: Arial, sans-serif; background: #f9f9f9; color: #222; }
     display: flex;
     align-items: center;
     gap: 10px;
-    padding-top: 12px;
+    padding-top: 10px;
     border-top: 1px solid #f0f3f0;
+    margin-top: auto;
 }
 .review-avatar {
     width: 38px; height: 38px; border-radius: 50%;
@@ -686,9 +724,10 @@ body { font-family: Arial, sans-serif; background: #f9f9f9; color: #222; }
         min-height: auto;
     }
     .navbar .logo { font-size: 17px; order: 1; align-items: center; }
-    .track-link { order: 2; margin-left: auto; }
+    .combo-offer-badge { order: 2; font-size: 11px; padding: 6px 12px; }
+    .track-link { order: 3; margin-left: auto; }
     .search-box {
-        order: 3;
+        order: 4;
         flex: 1 1 100%;
         max-width: 100%;
     }

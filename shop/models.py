@@ -5,7 +5,10 @@ from django.utils.text import slugify
 class Category(models.Model):
     name = models.CharField(max_length=100)
     slug = models.SlugField(unique=True, blank=True)
-    image = models.ImageField(upload_to='categories/', blank=True, null=True)
+    image = models.ImageField(
+        upload_to='categories/', blank=True, null=True,
+        help_text="Recommended size: 400x400px (square, 1:1 ratio). White or transparent background looks best."
+    )
     show_on_home = models.BooleanField(default=False, help_text="Homepage-e top category card e dekhabe")
     show_in_footer = models.BooleanField(default=False, help_text="Footer er 'Explore Products' e dekhabe")
     
@@ -37,10 +40,14 @@ class Product(models.Model):
         help_text="Flash sale kokhon shesh hobe (deadline). is_flash_sale checked thakle eta filup koro."
     )
     is_best_selling = models.BooleanField(default=False, help_text="Check korle 'Best Selling Products' section e dekhabe")
+    is_combo_offer = models.BooleanField(default=False, help_text="Check korle Combo Offer page e dekhabe")
     price = models.DecimalField(max_digits=10, decimal_places=2)
     discount_price = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
     stock = models.PositiveIntegerField(default=0)
-    image = models.ImageField(upload_to='products/', blank=True, null=True)
+    image = models.ImageField(
+        upload_to='products/', blank=True, null=True,
+        help_text="Recommended size: 1000x1000px (square, 1:1 ratio). White/plain background looks best. Higher resolution keeps the zoom-on-hover feature sharp."
+    )
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
@@ -61,6 +68,23 @@ class Product(models.Model):
 
     def __str__(self):
         return self.name
+
+
+
+class ProductImage(models.Model):
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='images')
+    image = models.ImageField(
+        upload_to='products/gallery/',
+        help_text="Recommended size: 1000x1000px (square, 1:1 ratio), same style as main image."
+    )
+    order = models.PositiveIntegerField(default=0, help_text="Choto number age dekhabe")
+
+    class Meta:
+        ordering = ['order']
+
+    def __str__(self):
+        return f"{self.product.name} - Image {self.order}"
+
 
 
 class Order(models.Model):

@@ -364,3 +364,13 @@ def buy_now(request, product_id):
     product = get_object_or_404(Product, id=product_id)
     cart.add(product=product, quantity=1)
     return redirect('shop:checkout')
+
+
+def combo_offers(request):
+    cart = Cart(request)
+    products = Product.objects.filter(is_active=True, is_combo_offer=True)
+    context = {
+        'products': products,
+        'cart': cart,
+    }
+    return render(request, 'shop/combo_offers.html', context)

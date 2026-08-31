@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Category, Product, Order, OrderItem, PromoCode, Advertisement
+from .models import Category, Product, ProductImage, Order, OrderItem, PromoCode, Advertisement
 
 
 @admin.register(Category)
@@ -11,14 +11,19 @@ class CategoryAdmin(admin.ModelAdmin):
 
 
 
+class ProductImageInline(admin.TabularInline):
+    model = ProductImage
+    extra = 3
+
+
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
-    list_display = ('name', 'category', 'price', 'discount_price', 'stock', 'is_active', 'is_best_selling', 'is_flash_sale', 'flash_sale_end')
-    list_filter = ('category', 'is_active', 'is_best_selling', 'is_flash_sale')
+    list_display = ('name', 'category', 'price', 'discount_price', 'stock', 'is_active', 'is_best_selling', 'is_flash_sale', 'flash_sale_end', 'is_combo_offer')
+    list_filter = ('category', 'is_active', 'is_best_selling', 'is_flash_sale', 'is_combo_offer')
     prepopulated_fields = {'slug': ('name',)}
     search_fields = ('name', 'description')
-    list_editable = ('price', 'stock', 'is_active', 'is_best_selling', 'is_flash_sale')
-      
+    list_editable = ('price', 'stock', 'is_active', 'is_best_selling', 'is_flash_sale', 'is_combo_offer')
+    inlines = [ProductImageInline]
 
 
 
